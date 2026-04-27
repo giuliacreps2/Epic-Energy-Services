@@ -7,6 +7,6 @@ import team5.Epic_Energy_Services.entities.UserRole;
 import java.util.UUID;
 
 @Repository
-public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
+public interface UserRolesRepository extends JpaRepository<UserRole, UUID> {
     void deleteByUserId(UUID userId);
 }

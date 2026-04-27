@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
 import team5.Epic_Energy_Services.payloads.LoginDTO;
-import team5.Epic_Energy_Services.payloads.UserDTO;
+import team5.Epic_Energy_Services.payloads.UsersDTO;
 import team5.Epic_Energy_Services.services.AuthService;
 import team5.Epic_Energy_Services.services.UsersService;
 
@@ -27,7 +27,7 @@ public class AuthController {
     // POST /auth/register
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public String register(@RequestBody @Validated UserDTO body, BindingResult validation) {
+    public String register(@RequestBody @Validated UsersDTO body, BindingResult validation) {
         if (validation.hasErrors()) {
             String errors = validation.getAllErrors()
                     .stream()

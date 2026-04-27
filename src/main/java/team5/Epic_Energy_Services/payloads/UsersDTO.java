@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public record UserDTO(
+public record UsersDTO(
         @NotBlank(message = "Username is required")
         String username,
         @NotBlank(message = "Email is required")

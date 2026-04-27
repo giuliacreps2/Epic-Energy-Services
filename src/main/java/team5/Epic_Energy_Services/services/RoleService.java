@@ -3,45 +3,45 @@ package team5.Epic_Energy_Services.services;
 import org.springframework.stereotype.Service;
 import team5.Epic_Energy_Services.entities.Role;
 import team5.Epic_Energy_Services.exceptions.NotFoundException;
-import team5.Epic_Energy_Services.payloads.RoleDTO;
-import team5.Epic_Energy_Services.repositories.RoleRepository;
+import team5.Epic_Energy_Services.payloads.RolesDTO;
+import team5.Epic_Energy_Services.repositories.RolesRepository;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class RoleService {
-    private final RoleRepository roleRepository;
+    private final RolesRepository rolesRepository;
 
-    public RoleService(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    public RoleService(RolesRepository rolesRepository) {
+        this.rolesRepository = rolesRepository;
     }
 
-    public RoleDTO save(RoleDTO roleDTO) {
-        Role role = new Role(roleDTO.roleName());
-        this.roleRepository.save(role);
-        return roleDTO;
+    public RolesDTO save(RolesDTO rolesDTO) {
+        Role role = new Role(rolesDTO.roleName());
+        this.rolesRepository.save(role);
+        return rolesDTO;
     }
 
-    public List<RoleDTO> findAll() {
-        List<Role> roles = this.roleRepository.findAll();
-        List<RoleDTO> rolesDto = roles.stream().map(r -> new RoleDTO(r.getRoleName())).toList();
+    public List<RolesDTO> findAll() {
+        List<Role> roles = this.rolesRepository.findAll();
+        List<RolesDTO> rolesDto = roles.stream().map(r -> new RolesDTO(r.getRoleName())).toList();
         return rolesDto;
     }
 
     public void deleteById(UUID id) {
-        Role found = this.roleRepository.findById(id).orElseThrow(() -> new NotFoundException("role not found"));
-        this.roleRepository.delete(found);
+        Role found = this.rolesRepository.findById(id).orElseThrow(() -> new NotFoundException("role not found"));
+        this.rolesRepository.delete(found);
     }
 
-    public RoleDTO modifyById(RoleDTO roleDTO, UUID id) {
-        Role found = this.roleRepository.findById(id).orElseThrow(() -> new NotFoundException("role not found"));
-        found.setRoleName(roleDTO.roleName());
-        this.roleRepository.save(found);
-        return new RoleDTO(found.getRoleName());
+    public RolesDTO modifyById(RolesDTO rolesDTO, UUID id) {
+        Role found = this.rolesRepository.findById(id).orElseThrow(() -> new NotFoundException("role not found"));
+        found.setRoleName(rolesDTO.roleName());
+        this.rolesRepository.save(found);
+        return new RolesDTO(found.getRoleName());
     }
 
     public Role findByName(String name) {
-        return this.roleRepository.findByRoleName(name).orElseThrow(() -> new NotFoundException("role not found"));
+        return this.rolesRepository.findByRoleName(name).orElseThrow(() -> new NotFoundException("role not found"));
     }
 }

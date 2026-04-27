@@ -7,43 +7,43 @@ import team5.Epic_Energy_Services.entities.Role;
 import team5.Epic_Energy_Services.entities.User;
 import team5.Epic_Energy_Services.entities.UserRole;
 import team5.Epic_Energy_Services.exceptions.NotFoundException;
-import team5.Epic_Energy_Services.payloads.UserDTO;
-import team5.Epic_Energy_Services.repositories.UserRepository;
+import team5.Epic_Energy_Services.payloads.UsersDTO;
+import team5.Epic_Energy_Services.repositories.UsersRepository;
 
 import java.util.UUID;
 
 @Service
 public class UsersService {
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final PasswordEncoder encoder;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
 
-    public UsersService(UserRepository userRepository,
+    public UsersService(UsersRepository usersRepository,
                         PasswordEncoder encoder, RoleService roleService, UserRoleService userRoleService
     ) {
-        this.userRepository = userRepository;
+        this.usersRepository = usersRepository;
         this.encoder = encoder;
         this.roleService = roleService;
         this.userRoleService = userRoleService;
     }
 
     public User findByEmail(String email) {
-        return this.userRepository.findByEmail(email)
+        return this.usersRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("email user " + email + " not found"));
     }
 
     @Transactional
     public User findById(UUID userId) {
-        return this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("id not found"));
+        return this.usersRepository.findById(userId).orElseThrow(() -> new NotFoundException("id not found"));
     }
 
-    public User save(UserDTO userDTO) {
-        User user = new User(userDTO.username(), userDTO.email()
-                , this.encoder.encode(userDTO.password()), userDTO.name(), userDTO.surname(), userDTO.avatar());
-        Role role = this.roleService.findByName(userDTO.role().trim());
+    public User save(UsersDTO usersDTO) {
+        User user = new User(usersDTO.username(), usersDTO.email()
+                , this.encoder.encode(usersDTO.password()), usersDTO.name(), usersDTO.surname(), usersDTO.avatar());
+        Role role = this.roleService.findByName(usersDTO.role().trim());
         UserRole userRole = new UserRole(user, role);
-        User userCreated = this.userRepository.save(user);
+        User userCreated = this.usersRepository.save(user);
         this.userRoleService.save(userRole);
         return userCreated;
     }

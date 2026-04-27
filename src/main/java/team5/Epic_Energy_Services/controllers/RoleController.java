@@ -5,7 +5,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
-import team5.Epic_Energy_Services.payloads.RoleDTO;
+import team5.Epic_Energy_Services.payloads.RolesDTO;
 import team5.Epic_Energy_Services.services.RoleService;
 
 import java.util.List;
@@ -22,13 +22,13 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoleDTO save(@RequestBody @Validated RoleDTO roleDTO, BindingResult validation) {
+    public RolesDTO save(@RequestBody @Validated RolesDTO rolesDTO, BindingResult validation) {
         if (validation.hasErrors()) throw new BadRequestException("role is not valid");
-        return this.roleService.save(roleDTO);
+        return this.roleService.save(rolesDTO);
     }
 
     @GetMapping
-    public List<RoleDTO> findAll() {
+    public List<RolesDTO> findAll() {
         return this.roleService.findAll();
     }
 
@@ -39,8 +39,8 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public RoleDTO modifyById(@RequestBody @Validated RoleDTO roleDTO, BindingResult validation, @PathVariable UUID id) {
+    public RolesDTO modifyById(@RequestBody @Validated RolesDTO rolesDTO, BindingResult validation, @PathVariable UUID id) {
         if (validation.hasErrors()) throw new BadRequestException("role is not valid");
-        return this.roleService.modifyById(roleDTO, id);
+        return this.roleService.modifyById(rolesDTO, id);
     }
 }
