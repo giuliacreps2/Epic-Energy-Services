@@ -1,8 +1,12 @@
 package team5.Epic_Energy_Services.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import team5.Epic_Energy_Services.entities.B2bClient;
+import team5.Epic_Energy_Services.payloads.ClientsDTO;
 import team5.Epic_Energy_Services.services.ClientsService;
 
 import java.util.UUID;
@@ -16,6 +20,19 @@ public class ClientsController {
 
     public ClientsController(ClientsService clientsService) {
         this.clientsService = clientsService;
+    }
+
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Controller attivo!";
+    }
+
+    //1.POST CLIENTE
+    @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public B2bClient save(@RequestBody @Validated ClientsDTO body) {
+        return this.clientsService.saveClient(body);
     }
 
 

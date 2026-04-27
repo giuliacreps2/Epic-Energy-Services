@@ -10,9 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import team5.Epic_Energy_Services.NotAuthorized;
-import team5.Epic_Energy_Services.User;
-import team5.Epic_Energy_Services.UserService;
+import team5.Epic_Energy_Services.entities.User;
+import team5.Epic_Energy_Services.exceptions.NotAuthorized;
+import team5.Epic_Energy_Services.services.UsersService;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -20,37 +20,52 @@ import java.util.UUID;
 @Component
 public class TokenFilter extends OncePerRequestFilter {
     private final TokenTools tokenTools;
-    private final UserService userService;
+    private final UsersService usersService;
 
-    public TokenFilter(TokenTools tokenTools, UserService userService) {
+    public TokenFilter(TokenTools tokenTools, UsersService usersService) {
         this.tokenTools = tokenTools;
-        this.userService = userService;
+        this.usersService = usersService;
     }
-    @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer "))
-                throw new NotAuthorized("token is not correct");
-            String accessToken = authHeader.replace("Bearer ", "");
-            try{
-                tokenTools.verifyToken(accessToken);
-                User authenticatedUser;
-                UUID userId = this.tokenTools.extractIdFromToken(accessToken);
-                authenticatedUser = this.userService.findById(userId);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }catch(NotAuthorized ex){
-                System.out.println(ex.getMessage());
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,ex.getMessage());
-                return;
-            }
 
-            filterChain.doFilter(request, response);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            throw new NotAuthorized("token is not correct");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token is not correct");
+            return;
+        }
+        String accessToken = authHeader.replace("Bearer ", "");
+        try {
+            tokenTools.verifyToken(accessToken);
+            User authenticatedUser;
+            UUID userId = this.tokenTools.extractIdFromToken(accessToken);
+            authenticatedUser = this.usersService.findById(userId);
+            System.out.println(">>> USER: " + authenticatedUser.getUsername());
+            System.out.println(">>> AUTHORITIES: " + authenticatedUser.getAuthorities());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            authenticatedUser = this.usersService.findById(userId);
+//            Authentication authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (NotAuthorized ex) {
+            System.out.println(ex.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+            return;
+        }
+
+        filterChain.doFilter(request, response);
     }
+
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        return new AntPathMatcher().match("/auth/**", request.getServletPath());
+//    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return new AntPathMatcher().match("/**", request.getServletPath());
+        return new AntPathMatcher().match("/auth/**", request.getServletPath()) ||
+                new AntPathMatcher().match("/roles/**", request.getServletPath());
     }
 
 }

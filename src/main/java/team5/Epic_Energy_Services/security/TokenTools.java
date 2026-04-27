@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import team5.Epic_Energy_Services.NotAuthorized;
-import team5.Epic_Energy_Services.User;
+import team5.Epic_Energy_Services.entities.User;
+import team5.Epic_Energy_Services.exceptions.NotAuthorized;
 
 import java.util.Date;
 import java.util.UUID;

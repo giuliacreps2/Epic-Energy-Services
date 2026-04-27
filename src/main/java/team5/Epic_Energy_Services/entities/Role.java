@@ -1,4 +1,5 @@
-package team5.Epic_Energy_Services;
+package team5.Epic_Energy_Services.entities;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

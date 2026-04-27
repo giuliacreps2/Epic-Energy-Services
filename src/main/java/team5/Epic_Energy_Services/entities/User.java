@@ -1,4 +1,5 @@
-package team5.Epic_Energy_Services;
+package team5.Epic_Energy_Services.entities;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,11 +29,11 @@ public class User implements UserDetails {
     private String password;
     @Column(nullable = true)
     private String name;
-    @Column( nullable = true)
+    @Column(nullable = true)
     private String surname;
     @Column(nullable = true)
     private String avatar;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRole> userRoles;
 
     public User(String username, String email, String password, String name, String surname, String avatar) {
@@ -50,6 +51,7 @@ public class User implements UserDetails {
                 .map(ur -> new SimpleGrantedAuthority(ur.getRole().getRoleName()))
                 .toList();
     }
+
     @Override
     public String getUsername() {
         return this.username;

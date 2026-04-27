@@ -1,4 +1,4 @@
-package team5.Epic_Energy_Services;
+package team5.Epic_Energy_Services.payloads;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,4 +23,5 @@ public record UserDTO(
         String avatar,
         @NotBlank(message = "Avatar is required")
         String role
-) {}
+) {
+}
