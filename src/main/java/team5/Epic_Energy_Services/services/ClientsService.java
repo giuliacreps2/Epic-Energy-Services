@@ -23,7 +23,7 @@ public class ClientsService {
 
 
     //5. UPLOAD LOGO AZIENDALE
-    public Cloudinary logoUpload(MultipartFile file, UUID userId) {
+    public void logoUpload(MultipartFile file, UUID userId) {
         try {
             Map result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             String url = (String) result.get("secure_url");
@@ -31,6 +31,5 @@ public class ClientsService {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        return cloudinary;
     }
 }
