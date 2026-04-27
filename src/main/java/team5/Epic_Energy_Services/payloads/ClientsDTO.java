@@ -1,12 +1,16 @@
 package team5.Epic_Energy_Services.payloads;
 
+<<<<<<< Updated upstream
 import jakarta.validation.constraints.*;
 import team5.Epic_Energy_Services.enums.TypeB2bClient;
 
+=======
+>>>>>>> Stashed changes
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ClientsDTO(
+<<<<<<< Updated upstream
         @NotBlank(message = "La ragione sociale è obbligatoria")
         String companyName,
 
@@ -47,3 +51,21 @@ public record ClientsDTO(
         TypeB2bClient typeClient
 ) {
 }
+=======
+        String companyName,
+        Integer vatNumber,
+        LocalDate createdAt,
+        LocalDate lastContactDate,
+        BigDecimal annualRevenue,
+        String certifiedEmail,
+        Integer phone,
+        String contactEmail,
+        String contactName,
+        String contactSurname,
+        Integer contactPhone,
+        String companyLogo,
+        String legalAddress,
+        String operationalAddress
+) {
+}
+>>>>>>> Stashed changes
