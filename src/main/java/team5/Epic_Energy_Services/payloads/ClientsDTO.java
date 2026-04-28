@@ -48,4 +48,5 @@ public record ClientsDTO(
         String companyLogo,
         TypeB2bClient typeClient
 ) {
+
 }

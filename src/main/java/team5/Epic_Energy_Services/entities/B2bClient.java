@@ -49,6 +49,7 @@ public class B2bClient {
     @Enumerated(EnumType.STRING)
     private TypeB2bClient typeClient;
 
+    
     @OneToOne
     @JoinColumn(name = "legal_address_id")
     private String legalAddress;

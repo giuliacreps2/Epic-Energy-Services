@@ -3,12 +3,17 @@ package team5.Epic_Energy_Services.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import team5.Epic_Energy_Services.entities.B2bClient;
+import team5.Epic_Energy_Services.exceptions.BadRequestException;
+import team5.Epic_Energy_Services.exceptions.NotFoundException;
 import team5.Epic_Energy_Services.exceptions.NotFoundIdException;
 import team5.Epic_Energy_Services.payloads.ClientsDTO;
 import team5.Epic_Energy_Services.repositories.ClientsRepository;
+import team5.Epic_Energy_Services.tools.EmailSender;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,14 +26,16 @@ public class ClientsService {
 
     private final Cloudinary cloudinary;
     private final ClientsRepository clientsRepository;
+    private final EmailSender emailSender;
 
-    public ClientsService(Cloudinary cloudinary, ClientsRepository clientsRepository) {
+
+    public ClientsService(Cloudinary cloudinary, ClientsRepository clientsRepository, EmailSender emailSender) {
         this.cloudinary = cloudinary;
         this.clientsRepository = clientsRepository;
+        this.emailSender = emailSender;
     }
 
-
-    //1.SAVE CLIENT
+    //1.SAVE CLIENT + SEND MAIL
     public B2bClient saveClient(ClientsDTO body) {
         B2bClient newClient = new B2bClient(body.companyName(),
                 body.vatNumber(),
@@ -43,24 +50,30 @@ public class ClientsService {
                 body.contactPhone(),
                 body.typeClient());
         B2bClient savedClient = this.clientsRepository.save(newClient);
+        this.emailSender.sendRegistrationEmail(savedClient);
+        log.info("Client saved Successfully" + savedClient);
         return savedClient;
     }
 
+    //2. FINDALL(Pageable pageable)
+    public Page<B2bClient> findAllClients(Pageable pageable) {
+        Page<B2bClient> clientsList = this.clientsRepository.findAll(pageable);
+        return clientsList;
+    }
 
-    //2. FINDBYID
+    //3. FINDBYID
     public B2bClient findById(UUID clientId) {
         return this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
     }
 
-
-    //5. UPLOAD LOGO AZIENDALE
+    //4. UPLOAD LOGO AZIENDALE
     public void logoUpload(MultipartFile file, UUID clientId) {
         try {
             Map result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             String url = (String) result.get("secure_url");
             log.info(url);
 
-            B2bClient client = this.clientsRepository.findById(clientId).orElseThrow();
+            B2bClient client = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
             client.setCompanyLogo(url);
             clientsRepository.save(client);
 
@@ -68,4 +81,70 @@ public class ClientsService {
             throw new RuntimeException(ex);
         }
     }
+
+    //-------------------------------------------ORDINARE------------------------------------------------//
+
+
+    //5. RICERCA per Data di inserimento
+    public Page<B2bClient> findByDate(ClientsDTO body, Pageable pageable) {
+        return this.clientsRepository.findAllByCreatedAt(body.createdAt(), pageable);
+    }
+
+    //6. RICERCA per Ultimo Contatto
+    public Page<B2bClient> findByLastContactDate(ClientsDTO body, Pageable pageable) {
+        return this.clientsRepository.findAllByLastContactDate(body.lastContactDate(), pageable);
+    }
+
+    //7. RICERCA CLIENTI per Parte del nome
+    public Page<B2bClient> findAllByContactName(ClientsDTO body, Pageable pageable) {
+        return this.clientsRepository.findByContactNameContainingIgnoreCase(body.contactName(), pageable);
+    }
+
+    //8. RICERCA CLIENTE per Parte del nome
+    public B2bClient findByContactName(ClientsDTO body) {
+        return this.clientsRepository.findByContactNameIgnoreCase(body.contactName())
+                .orElseThrow(() -> new NotFoundException(body.contactName() + " not found"));
+    }
+
+    //9. Fatturato annuale
+
+
+    //10. DELETE
+    public void findByIdAndDelete(UUID clientId) {
+        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+        this.clientsRepository.delete(found);
+        log.info("Client with id " + clientId + " deleted successfully");
+    }
+
+
+    //11. UPDATE
+    public B2bClient findByIdAndUpdate(UUID clientId, ClientsDTO body) {
+        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+
+        if (!found.getContactEmail().equals(body.contactEmail())) {
+            if (this.clientsRepository.existsByEmail(body.contactEmail()))
+                throw new BadRequestException("Email:" + body.contactEmail() + "already exists");
+        }
+
+        found.setCompanyName(body.companyName());
+        found.setVatNumber(body.vatNumber());
+        found.setCreatedAt(body.createdAt());
+        found.setLastContactDate(body.lastContactDate());
+        found.setLastContactDate(body.lastContactDate());
+        found.setCertifiedEmail(body.certifiedEmail());
+        found.setPhoneClient(body.phoneClient());
+        found.setContactEmail(body.contactEmail());
+        found.setContactName(body.contactName());
+        found.setContactSurname(body.contactSurname());
+        found.setTypeClient(body.typeClient());
+        found.setCompanyLogo(body.companyLogo());
+
+        B2bClient updatedClient = this.clientsRepository.save(found);
+
+        log.info("Client with id " + clientId + " updated successfully");
+
+        return updatedClient;
+    }
+
+
 }
