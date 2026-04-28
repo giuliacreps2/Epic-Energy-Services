@@ -1,6 +1,9 @@
 package team5.Epic_Energy_Services.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +31,31 @@ public class ClientsController {
         return "Controller attivo!";
     }
 
+
     //1.POST CLIENTE
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('admin')")
     public B2bClient save(@RequestBody @Validated ClientsDTO body) {
         return this.clientsService.saveClient(body);
     }
+
+    //2. GET CLIENTSBYNAME
+    @GetMapping("/all")
+    public Page<B2bClient> getAllClients(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size,
+                                         @RequestParam(defaultValue = "nomeContatto") String sortBy) {
+        return this.clientsService.findAllClients(PageRequest.of(page, size, Sort.by(sortBy)));
+    }
+
+    //3. GET CLIENTBYID
+    @GetMapping
+    public B2bClient getClientById(@RequestParam UUID clientId) {
+        return this.clientsService.findById(clientId);
+    }
+
+
+    //4. GET CLIENTSBYCREATEDAT
+    @GetMapping
 
 
     //5.PATCH COMPAGNY LOGO
