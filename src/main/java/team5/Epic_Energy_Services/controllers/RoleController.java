@@ -1,6 +1,7 @@
 package team5.Epic_Energy_Services.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class RoleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('admin')")
     @ResponseStatus(HttpStatus.CREATED)
     public RolesDTO save(@RequestBody @Validated RolesDTO rolesDTO, BindingResult validation) {
         if (validation.hasErrors()) throw new BadRequestException("role is not valid");
@@ -33,12 +35,14 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void DeleteById(@PathVariable UUID id) {
         this.roleService.deleteById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public RolesDTO modifyById(@RequestBody @Validated RolesDTO rolesDTO, BindingResult validation, @PathVariable UUID id) {
         if (validation.hasErrors()) throw new BadRequestException("role is not valid");
         return this.roleService.modifyById(rolesDTO, id);
