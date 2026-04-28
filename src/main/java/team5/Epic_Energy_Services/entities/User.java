@@ -1,5 +1,6 @@
 package team5.Epic_Energy_Services.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"accountNonExpired", "accountNonLocked",
+        "credentialsNonExpired", "enabled","password","userRoles"})
 public class User implements UserDetails {
     @Id
     @GeneratedValue

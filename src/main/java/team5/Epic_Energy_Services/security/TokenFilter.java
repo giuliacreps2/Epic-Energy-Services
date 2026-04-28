@@ -45,9 +45,9 @@ public class TokenFilter extends OncePerRequestFilter {
             System.out.println(">>> AUTHORITIES: " + authenticatedUser.getAuthorities());
             Authentication authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
-//            authenticatedUser = this.usersService.findById(userId);
-//            Authentication authentication = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
+            authenticatedUser = this.usersService.findById(userId);
+           Authentication auth = new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (NotAuthorized ex) {
             System.out.println(ex.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
@@ -60,7 +60,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return new AntPathMatcher().match("/**", request.getServletPath());
+        return new AntPathMatcher().match("/auth/**", request.getServletPath());
     }
 
 }

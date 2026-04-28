@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import team5.Epic_Energy_Services.entities.User;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
 import team5.Epic_Energy_Services.payloads.LoginDTO;
 import team5.Epic_Energy_Services.payloads.UsersDTO;
+import team5.Epic_Energy_Services.payloads.UsersResponseDTO;
 import team5.Epic_Energy_Services.services.AuthService;
 import team5.Epic_Energy_Services.services.UsersService;
 
@@ -27,7 +29,7 @@ public class AuthController {
     // POST /auth/register
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public String register(@RequestBody @Validated UsersDTO body, BindingResult validation) {
+    public UsersResponseDTO register(@RequestBody @Validated UsersDTO body, BindingResult validation) {
         if (validation.hasErrors()) {
             String errors = validation.getAllErrors()
                     .stream()
@@ -35,8 +37,8 @@ public class AuthController {
                     .collect(Collectors.joining(", "));
             throw new BadRequestException("Dati non validi: " + errors);
         }
-        this.usersService.save(body);
-        return "Utente registrato con successo";
+        User user = this.usersService.save(body);
+        return new UsersResponseDTO(user.getId());
     }
 
     // POST /auth/login
