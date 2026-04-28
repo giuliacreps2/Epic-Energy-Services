@@ -82,8 +82,6 @@ public class ClientsService {
         }
     }
 
-    //-------------------------------------------ORDINARE------------------------------------------------//
-
 
     //5. RICERCA per Data di inserimento
     public Page<B2bClient> findByDate(ClientsDTO body, Pageable pageable) {
