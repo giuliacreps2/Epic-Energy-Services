@@ -12,13 +12,18 @@ import java.util.UUID;
 
 @Repository
 public interface ClientsRepository extends JpaRepository<B2bClient, UUID> {
-
+    //FILTRI
+    //Data inizio e fine contatto
     Page<B2bClient> findAllByCreatedAt(LocalDate createdAt, Pageable pageable);
 
     Page<B2bClient> findAllByLastContactDate(LocalDate lastContactDate, Pageable pageable);
 
+    //Nome del responsabile e dell'azienda
     Page<B2bClient> findByContactNameContainingIgnoreCase(String contactName, Pageable pageable);
 
+    Page<B2bClient> findByCompanyNameContainingIgnoreCase(String companyName, Pageable pageable);
+
+    
     Optional<B2bClient> findByContactNameIgnoreCase(String contactName);
 
     boolean existsByContactEmail(String contactEmail);
