@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "b2b_Client")
-public class b2bClient {
+public class B2bClient {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID b2bClientID;
@@ -24,7 +24,7 @@ public class b2bClient {
     @Column(nullable = false)
     private String companyName;
     @Column(nullable = false, unique = true)
-    private Integer vatNumber;
+    private Long vatNumber;
     @Column(nullable = false)
     private LocalDate createdAt;
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class b2bClient {
     @Column(nullable = false)
     private String certifiedEmail;
     @Column(nullable = false)
-    private Integer phone;
+    private Long phoneClient;
     @Column(nullable = false)
     private String contactEmail;
     @Column(nullable = false)
@@ -42,34 +42,35 @@ public class b2bClient {
     @Column(nullable = false)
     private String contactSurname;
     @Column(nullable = false)
-    private Integer contactPhone;
+    private Long contactPhone;
     @Column
     private String companyLogo;
-    @Column(nullable = false)
-    private String legalAddress;
-    @Column
-    private String operationalAddress;
+
+    @Enumerated(EnumType.STRING)
+    private TypeB2bClient typeClient;
+
+//    @OneToOne
+//    @JoinColumn(name = "legal_address_id")
+//    private String legalAddress;
+//
+//    @OneToOne
+//    @JoinColumn(name = "operational_address_id")
+//    private String operationalAddress;
 
 
-    @Enumerated
-    private TypeB2bClient type;
-
-
-    public b2bClient(String companyName, Integer vatNumber, LocalDate createdAt, LocalDate lastContactDate, double annualRevenue, String certifiedEmail, Integer phone, String contactEmail, String contactName, String contactSurname, Integer contactPhone, String legalAddress, String operationalAddress, TypeB2bClient type) {
+    public B2bClient(String companyName, Long vatNumber, LocalDate createdAt, LocalDate lastContactDate, double annualRevenue, String certifiedEmail, Long phoneClient, String contactEmail, String contactName, String contactSurname, Long contactPhone, TypeB2bClient typeClient) {
         this.companyName = companyName;
         this.vatNumber = vatNumber;
         this.createdAt = createdAt;
         this.lastContactDate = lastContactDate;
         this.annualRevenue = annualRevenue;
         this.certifiedEmail = certifiedEmail;
-        this.phone = phone;
+        this.phoneClient = phoneClient;
         this.contactEmail = contactEmail;
         this.contactName = contactName;
         this.contactSurname = contactSurname;
         this.contactPhone = contactPhone;
         this.companyLogo = "https://ui-avatars.com/api?name=" + companyName + "+" + contactSurname;
-        this.legalAddress = legalAddress;
-        this.operationalAddress = operationalAddress;
-        this.type = type;
+        this.typeClient = typeClient;
     }
 }

@@ -1,32 +1,61 @@
 package team5.Epic_Energy_Services.exceptions;
 
 
-
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import team5.Epic_Energy_Services.dto.ErrorsDTO;
+import team5.Epic_Energy_Services.payloads.ErrorsDTO;
+import team5.Epic_Energy_Services.payloads.ErrorsWithListDTO;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ErrorsHandler {
 
-	@ExceptionHandler(BadRequestException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorsDTO handleBadRequest(BadRequestException ex) {
-		return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
-	}
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) //400
+    public ErrorsDTO handleBadRequest(BadRequestException ex) {
+        return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+    }
 
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    public ErrorsWithListDTO handleValidationErrors(ValidationException ex) {
+        return new ErrorsWithListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrors());
+    }
 
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorsDTO handleGenericEx(Exception ex) {
-		ex.printStackTrace();
-		return new ErrorsDTO("C'è stato un errore lato server, giuro che lo risolveremo presto!", LocalDateTime.now());
-	}
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    public ErrorsDTO handleUnauthorizedEx(UnauthorizedException ex) {
+        return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+    }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403
+    public ErrorsDTO handleAuthorizationDeniedEx(AuthorizationDeniedException ex) {
+        return new ErrorsDTO("Non hai i permessi per accedere", LocalDateTime.now());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND) // 404
+    public ErrorsDTO handleNotFoundEx(NotFoundException ex) {
+        return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+//    public ErrorsDTO handleGenericEx(Exception ex) {
+//        ex.printStackTrace();
+//        return new ErrorsDTO("C'è stato un errore lato server, giuro che lo risolveremo presto!", LocalDateTime.now());
+//    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneric(Exception ex) {
+        return ResponseEntity.status(500).body("Errore: " + ex.getMessage());
+    }
 
 }
+
