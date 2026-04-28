@@ -23,8 +23,12 @@ public interface ClientsRepository extends JpaRepository<B2bClient, UUID> {
 
     Page<B2bClient> findByCompanyNameContainingIgnoreCase(String companyName, Pageable pageable);
 
-    
+
     Optional<B2bClient> findByContactNameIgnoreCase(String contactName);
 
     boolean existsByContactEmail(String contactEmail);
+
+    Page<B2bClient> findByAnnualRevenueGreaterThanEqual(double annualRevenue, Pageable pageable);
+
+    Page<B2bClient> findByLegalAddressMunicipalityProvinceNameIgnoreCase(String name, Pageable pageable);
 }

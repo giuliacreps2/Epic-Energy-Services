@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import team5.Epic_Energy_Services.entities.B2bClient;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
-import team5.Epic_Energy_Services.exceptions.NotFoundException;
 import team5.Epic_Energy_Services.exceptions.NotFoundIdException;
 import team5.Epic_Energy_Services.payloads.ClientsDTO;
 import team5.Epic_Energy_Services.repositories.ClientsRepository;
@@ -83,31 +82,32 @@ public class ClientsService {
     }
 
 
-    //5. RICERCA per Data di inserimento
-    public Page<B2bClient> findByDate(ClientsDTO body, Pageable pageable) {
-        return this.clientsRepository.findAllByCreatedAt(body.createdAt(), pageable);
+    //5. FILTRO DETAILS
+    public Page<B2bClient> search(Double annualRevenue, LocalDate createdAt, LocalDate lastContactDate, String companyName, String name, Pageable pageable) {
+        if (annualRevenue != null && annualRevenue != 0)
+            return this.clientsRepository.findByAnnualRevenueGreaterThanEqual(annualRevenue, pageable);
+
+        if (createdAt != null)
+            return this.clientsRepository.findAllByCreatedAt(createdAt, pageable);
+
+        if (lastContactDate != null)
+            return this.clientsRepository.findAllByLastContactDate(lastContactDate, pageable);
+
+        if (companyName != null)
+            return this.clientsRepository.findByCompanyNameContainingIgnoreCase(companyName, pageable);
+
+//        if (contactName != null) {
+//            return this.clientsRepository.findByContactNameContainingIgnoreCase(contactName, pageable);
+//        }
+        if (name != null && !name.isEmpty())
+            return this.clientsRepository.findByLegalAddressMunicipalityProvinceNameIgnoreCase(name, pageable);
+
+
+        return this.clientsRepository.findAll(pageable);
     }
 
-    //6. RICERCA per Ultimo Contatto
-    public Page<B2bClient> findByLastContactDate(ClientsDTO body, Pageable pageable) {
-        return this.clientsRepository.findAllByLastContactDate(body.lastContactDate(), pageable);
-    }
 
-    //7. RICERCA CLIENTI per Parte del nome
-    public Page<B2bClient> findAllByContactName(ClientsDTO body, Pageable pageable) {
-        return this.clientsRepository.findByContactNameContainingIgnoreCase(body.contactName(), pageable);
-    }
-
-    //8. RICERCA CLIENTE per Parte del nome
-    public B2bClient findByContactName(ClientsDTO body) {
-        return this.clientsRepository.findByContactNameIgnoreCase(body.contactName())
-                .orElseThrow(() -> new NotFoundException(body.contactName() + " not found"));
-    }
-
-    //9. Fatturato annuale
-
-
-    //10. DELETE
+    //6. DELETE
     public void findByIdAndDelete(UUID clientId) {
         B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
         this.clientsRepository.delete(found);
@@ -115,7 +115,7 @@ public class ClientsService {
     }
 
 
-    //11. UPDATE
+    //7. UPDATE
     public B2bClient findByIdAndUpdate(UUID clientId, ClientsDTO body) {
         B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
 
@@ -126,8 +126,8 @@ public class ClientsService {
 
         found.setCompanyName(body.companyName());
         found.setVatNumber(body.vatNumber());
+        found.setAnnualRevenue(body.annualRevenue().doubleValue());
         found.setCreatedAt(body.createdAt());
-        found.setLastContactDate(body.lastContactDate());
         found.setLastContactDate(body.lastContactDate());
         found.setCertifiedEmail(body.certifiedEmail());
         found.setPhoneClient(body.phoneClient());
@@ -144,5 +144,34 @@ public class ClientsService {
         return updatedClient;
     }
 
+
+    //    //5. RICERCA per Data di inserimento
+//    public Page<B2bClient> findAllByCreatedAtDate(ClientsDTO body, Pageable pageable) {
+//        return this.clientsRepository.findAllByCreatedAt(body.createdAt(), pageable);
+//    }
+//
+//    //6. RICERCA per Ultimo Contatto
+//    public Page<B2bClient> findAllByLastContactDate(ClientsDTO body, Pageable pageable) {
+//        return this.clientsRepository.findAllByLastContactDate(body.lastContactDate(), pageable);
+//    }
+//
+//    //7. RICERCA CLIENTI per Parte del nome
+//    public Page<B2bClient> findAllByContactName(ClientsDTO body, Pageable pageable) {
+//        return this.clientsRepository.findByContactNameContainingIgnoreCase(body.contactName(), pageable);
+//    }
+//
+//    //8. RICERCA CLIENTE per Parte del nome
+//    public B2bClient findByContactName(ClientsDTO body) {
+//        return this.clientsRepository.findByContactNameIgnoreCase(body.contactName())
+//                .orElseThrow(() -> new NotFoundException(body.contactName() + " not found"));
+//    }
+
+    //9. Fatturato annuale
+
+
+    //10. Ricerca per provincia
+
+
+    //11. Ricerca per città
 
 }
