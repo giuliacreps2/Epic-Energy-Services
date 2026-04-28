@@ -1,0 +1,85 @@
+package team5.Epic_Energy_Services.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import team5.Epic_Energy_Services.entities.Customer;
+import team5.Epic_Energy_Services.entities.Invoice;
+import team5.Epic_Energy_Services.entities.InvoiceStatus;
+import team5.Epic_Energy_Services.exceptions.NotFoundException;
+import team5.Epic_Energy_Services.payloads.InvoiceRequestDTO;
+import team5.Epic_Energy_Services.repositories.CustomerRepository;
+import team5.Epic_Energy_Services.repositories.InvoiceRepository;
+import team5.Epic_Energy_Services.repositories.InvoiceStatusRepository;
+
+@Service
+public class InvoiceService {
+
+    @Autowired
+    private InvoiceRepository invoiceRepo;
+
+    @Autowired
+    private CustomerRepository customerRepo;
+
+    @Autowired
+    private InvoiceStatusRepository statusRepo;
+
+    public Invoice save(InvoiceRequestDTO body) {
+        Customer customer = customerRepo.findById(body.customerId())
+                .orElseThrow(() -> new NotFoundException("Cliente non trovato"));
+
+        InvoiceStatus status = statusRepo.findById(body.statusId())
+                .orElseThrow(() -> new NotFoundException("Stato non trovato"));
+        Invoice newInvoice = new Invoice();
+        newInvoice.setDate(body.date());
+        newInvoice.setAmount(body.amount());
+        newInvoice.setNumber(body.number());
+        newInvoice.setCustomer(customer);
+        newInvoice.setStatus(status);
+
+        return invoiceRepo.save(newInvoice);
+    }
+
+    public Page<Invoice> findAll(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return invoiceRepo.findAll(pageable);
+    }
+
+    public Invoice findById(Long id) {
+        return invoiceRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Fattura con ID " + id + " non trovata"));
+    }
+
+    public void findByIdAndDelete(Long id) {
+        Invoice found = this.findById(id);
+        invoiceRepo.delete(found);
+    }
+
+
+    public Page<Invoice> filterByYear(int year, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepo.findByYear(year, pageable);
+    }
+
+    public Page<Invoice> filterByAmount(double min, double max, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepo.findByAmountBetween(min, max, pageable);
+    }
+
+    public Page<Invoice> filterByCustomer(Long customerId, int page, int size) {
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new NotFoundException("Cliente non trovato"));
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepo.findByCustomer(customer, pageable);
+    }
+
+    public Page<Invoice> filterByStatus(Long statusId, int page, int size) {
+        InvoiceStatus status = statusRepo.findById(statusId)
+                .orElseThrow(() -> new NotFoundException("Stato non trovato"));
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepo.findByStatus(status, pageable);
+    }
+}
