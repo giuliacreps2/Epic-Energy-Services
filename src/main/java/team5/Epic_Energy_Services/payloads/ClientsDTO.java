@@ -46,7 +46,24 @@ public record ClientsDTO(
         Long contactPhone,
 
         String companyLogo,
-        TypeB2bClient typeClient
+        TypeB2bClient typeClient,
+
+
+        /// ///////////
+        @NotBlank(message = "")
+        String street,
+
+        @NotNull
+        Integer number,
+
+        @NotBlank
+        String locality,
+
+        @NotNull
+        Integer zipCode,
+
+        @NotNull
+        Long id
 ) {
 
 }

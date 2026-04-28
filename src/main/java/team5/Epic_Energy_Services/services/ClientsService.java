@@ -7,11 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import team5.Epic_Energy_Services.entities.Address;
 import team5.Epic_Energy_Services.entities.B2bClient;
+import team5.Epic_Energy_Services.entities.Municipality;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
 import team5.Epic_Energy_Services.exceptions.NotFoundIdException;
 import team5.Epic_Energy_Services.payloads.ClientsDTO;
+import team5.Epic_Energy_Services.repositories.AddressRepository;
 import team5.Epic_Energy_Services.repositories.ClientsRepository;
+import team5.Epic_Energy_Services.repositories.MunicipalityRepository;
 import team5.Epic_Energy_Services.tools.EmailSender;
 
 import java.io.IOException;
@@ -26,16 +30,27 @@ public class ClientsService {
     private final Cloudinary cloudinary;
     private final ClientsRepository clientsRepository;
     private final EmailSender emailSender;
+    private final AddressRepository addressRepository;
+    private final MunicipalityRepository municipalityRepository;
 
 
-    public ClientsService(Cloudinary cloudinary, ClientsRepository clientsRepository, EmailSender emailSender) {
+    public ClientsService(Cloudinary cloudinary, ClientsRepository clientsRepository, EmailSender emailSender, AddressRepository addressRepository, MunicipalityRepository municipalityRepository) {
         this.cloudinary = cloudinary;
         this.clientsRepository = clientsRepository;
         this.emailSender = emailSender;
+        this.addressRepository = addressRepository;
+        this.municipalityRepository = municipalityRepository;
     }
 
     //1.SAVE CLIENT + SEND MAIL
     public B2bClient saveClient(ClientsDTO body) {
+        Municipality municipality = this.municipalityRepository.findById(body.id())
+                .orElseThrow(() -> new NotFoundIdException("Municipality", body.id()));
+
+        Address address = new Address(body.street(), body.number(), body.locality(), body.zipCode(), municipality);
+
+        addressRepository.save(address);
+
         B2bClient newClient = new B2bClient(body.companyName(),
                 body.vatNumber(),
                 body.createdAt() != null ? body.createdAt() : LocalDate.now(),
@@ -48,6 +63,9 @@ public class ClientsService {
                 body.contactSurname(),
                 body.contactPhone(),
                 body.typeClient());
+
+        newClient.setLegalAddress(address);
+
         B2bClient savedClient = this.clientsRepository.save(newClient);
         this.emailSender.sendRegistrationEmail(savedClient);
         log.info("Client saved Successfully" + savedClient);
@@ -62,7 +80,7 @@ public class ClientsService {
 
     //3. FINDBYID
     public B2bClient findById(UUID clientId) {
-        return this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+        return this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException("B2bClient", clientId));
     }
 
     //4. UPLOAD LOGO AZIENDALE
@@ -72,7 +90,7 @@ public class ClientsService {
             String url = (String) result.get("secure_url");
             log.info(url);
 
-            B2bClient client = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+            B2bClient client = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException("B2bClient", clientId));
             client.setCompanyLogo(url);
             clientsRepository.save(client);
 
@@ -109,7 +127,7 @@ public class ClientsService {
 
     //6. DELETE
     public void findByIdAndDelete(UUID clientId) {
-        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException("B2bClient", clientId));
         this.clientsRepository.delete(found);
         log.info("Client with id " + clientId + " deleted successfully");
     }
@@ -117,7 +135,7 @@ public class ClientsService {
 
     //7. UPDATE
     public B2bClient findByIdAndUpdate(UUID clientId, ClientsDTO body) {
-        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
+        B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException("B2bClient", clientId));
 
         if (!found.getContactEmail().equals(body.contactEmail())) {
             if (this.clientsRepository.existsByContactEmail(body.contactEmail()))
@@ -143,35 +161,5 @@ public class ClientsService {
 
         return updatedClient;
     }
-
-
-    //    //5. RICERCA per Data di inserimento
-//    public Page<B2bClient> findAllByCreatedAtDate(ClientsDTO body, Pageable pageable) {
-//        return this.clientsRepository.findAllByCreatedAt(body.createdAt(), pageable);
-//    }
-//
-//    //6. RICERCA per Ultimo Contatto
-//    public Page<B2bClient> findAllByLastContactDate(ClientsDTO body, Pageable pageable) {
-//        return this.clientsRepository.findAllByLastContactDate(body.lastContactDate(), pageable);
-//    }
-//
-//    //7. RICERCA CLIENTI per Parte del nome
-//    public Page<B2bClient> findAllByContactName(ClientsDTO body, Pageable pageable) {
-//        return this.clientsRepository.findByContactNameContainingIgnoreCase(body.contactName(), pageable);
-//    }
-//
-//    //8. RICERCA CLIENTE per Parte del nome
-//    public B2bClient findByContactName(ClientsDTO body) {
-//        return this.clientsRepository.findByContactNameIgnoreCase(body.contactName())
-//                .orElseThrow(() -> new NotFoundException(body.contactName() + " not found"));
-//    }
-
-    //9. Fatturato annuale
-
-
-    //10. Ricerca per provincia
-
-
-    //11. Ricerca per città
 
 }
