@@ -1,11 +1,14 @@
 package team5.Epic_Energy_Services.controllers;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import team5.Epic_Energy_Services.entities.User;
+import team5.Epic_Energy_Services.entities.UserRole;
 import team5.Epic_Energy_Services.services.UserRoleService;
 import team5.Epic_Energy_Services.services.UsersService;
 
@@ -22,26 +25,13 @@ public class UserController {
         this.userRoleService = userRoleService;
     }
 
-//    @PutMapping("/register")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public UserResponseDTO save(@RequestBody @Validated UserDTO userDTO, BindingResult validated) {
-//        if (validated.hasErrors()) throw new BadRequestException("errori");
-//        return new UserResponseDTO(this.userService.save(userDTO).getId());
-//    }
+    @GetMapping("/all")
+    public Page<UserRole> findAll(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "3") int size,
+                                  @RequestParam(defaultValue = "username") String sortBy) {
+        return this.userRoleService.findAll(page, size, sortBy);
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Controller attivo!";
     }
-
-
-//    @GetMapping("/all")
-//    public Page<UserRole> findAll(@RequestParam(defaultValue = "0") int page,
-//                                  @RequestParam(defaultValue = "3") int size,
-//                                  @RequestParam(defaultValue = "username") String sortBy) {
-//        return this.userRoleService.findAll(page, size, sortBy);
-//
-//    }
 
     @GetMapping("/me")
     public Collection<? extends GrantedAuthority> me(@AuthenticationPrincipal User user) {

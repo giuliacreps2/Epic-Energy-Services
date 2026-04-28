@@ -29,8 +29,7 @@ public class SecurityConfig {
                 .formLogin(f -> f.disable())
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/roles/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
