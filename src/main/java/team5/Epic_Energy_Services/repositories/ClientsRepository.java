@@ -21,5 +21,5 @@ public interface ClientsRepository extends JpaRepository<B2bClient, UUID> {
 
     Optional<B2bClient> findByContactNameIgnoreCase(String contactName);
 
-    boolean existsByEmail(String contactEmail);
+    boolean existsByContactEmail(String contactEmail);
 }

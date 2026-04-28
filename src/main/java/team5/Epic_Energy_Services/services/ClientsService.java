@@ -122,7 +122,7 @@ public class ClientsService {
         B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException(clientId));
 
         if (!found.getContactEmail().equals(body.contactEmail())) {
-            if (this.clientsRepository.existsByEmail(body.contactEmail()))
+            if (this.clientsRepository.existsByContactEmail(body.contactEmail()))
                 throw new BadRequestException("Email:" + body.contactEmail() + "already exists");
         }
 

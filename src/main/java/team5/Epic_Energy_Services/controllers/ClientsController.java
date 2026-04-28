@@ -55,7 +55,6 @@ public class ClientsController {
 
 
     //4. GET CLIENTSBYCREATEDAT
-    @GetMapping
 
 
     //5.PATCH COMPAGNY LOGO
