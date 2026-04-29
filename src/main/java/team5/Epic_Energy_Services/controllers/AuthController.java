@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import team5.Epic_Energy_Services.entities.User;
 import team5.Epic_Energy_Services.exceptions.BadRequestException;
 import team5.Epic_Energy_Services.payloads.LoginDTO;
+import team5.Epic_Energy_Services.payloads.TokenResponseDTO;
 import team5.Epic_Energy_Services.payloads.UsersDTO;
 import team5.Epic_Energy_Services.payloads.UsersResponseDTO;
 import team5.Epic_Energy_Services.services.AuthService;
 import team5.Epic_Energy_Services.services.UsersService;
 
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,8 +45,8 @@ public class AuthController {
 
     // POST /auth/login
     @PostMapping("/login")
-    public String login(@RequestBody @Validated LoginDTO body, BindingResult validation) {
+    public TokenResponseDTO login(@RequestBody @Validated LoginDTO body, BindingResult validation) {
         if (validation.hasErrors()) throw new BadRequestException("Credenziali non valide");
-        return this.authService.checkCredentialsAndGenerateToken(body);
+        return new TokenResponseDTO(this.authService.checkCredentialsAndGenerateToken(body), LocalDate.now());
     }
 }

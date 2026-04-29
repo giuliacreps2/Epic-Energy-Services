@@ -22,7 +22,7 @@ public class RoleController {
     }
 
     @PostMapping
-    //@PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('admin')")
     @ResponseStatus(HttpStatus.CREATED)
     public RolesDTO save(@RequestBody @Validated RolesDTO rolesDTO, BindingResult validation) {
         if (validation.hasErrors()) throw new BadRequestException("role is not valid");
