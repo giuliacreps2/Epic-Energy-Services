@@ -32,7 +32,7 @@ public class TokenTools {
         try {
             Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parse(token);
         } catch (Exception ex) {
-            throw new NotAuthorized("the token have problems rn");
+            throw new NotAuthorized("the token has problems rn");
         }
     }
 

@@ -34,6 +34,8 @@ public class UsersService {
                 .orElseThrow(() -> new NotFoundException("email user " + email + " not found"));
     }
 
+
+
     @Transactional
     public User findById(UUID userId) {
         return this.usersRepository.findById(userId).orElseThrow(() -> new NotFoundException("id not found"));
@@ -41,6 +43,7 @@ public class UsersService {
 
     public User save(UsersDTO usersDTO) {
         if(this.usersRepository.existsByEmail(usersDTO.email())) throw new BadRequestException("email already used");
+        if(this.usersRepository.existsByUsername(usersDTO.username())) throw new BadRequestException("username already used");
         User user = new User(usersDTO.username(), usersDTO.email()
                 , this.encoder.encode(usersDTO.password()), usersDTO.name(), usersDTO.surname(), usersDTO.avatar());
         Role role = this.roleService.findByName(usersDTO.role().trim());
