@@ -125,6 +125,9 @@ public class ClientsService {
     }
 
 
+    //Spring specification queries concatenate, componibili
+
+
     //6. DELETE
     public void findByIdAndDelete(UUID clientId) {
         B2bClient found = this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundIdException("B2bClient", clientId));
