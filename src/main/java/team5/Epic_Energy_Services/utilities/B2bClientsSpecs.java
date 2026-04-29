@@ -10,13 +10,12 @@ import java.util.UUID;
 public class B2bClientsSpecs {
 
     //Id
-    public static Specification<B2bClient> searchById(UUID clientId){
-        return (root,query, builder) ->
-            clientId == null ? null : builder.equal(root.get("clientId"), clientId);
-        };
+    public static Specification<B2bClient> searchById(UUID clientId) {
+        return (root, query, builder) ->
+                clientId == null ? null : builder.equal(root.get("clientId"), clientId);
     }
 
-    //AllClients
+    ;
 
     //Nome contatto
     public static Specification<B2bClient> hasContactName(String contactName) {
@@ -150,5 +149,4 @@ public class B2bClientsSpecs {
             );
         };
     }
-
 }
