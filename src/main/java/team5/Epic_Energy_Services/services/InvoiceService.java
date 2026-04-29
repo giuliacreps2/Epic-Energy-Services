@@ -6,14 +6,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import team5.Epic_Energy_Services.entities.Customer;
+import team5.Epic_Energy_Services.entities.B2bClient;
 import team5.Epic_Energy_Services.entities.Invoice;
 import team5.Epic_Energy_Services.entities.InvoiceStatus;
 import team5.Epic_Energy_Services.exceptions.NotFoundException;
 import team5.Epic_Energy_Services.payloads.InvoiceRequestDTO;
-import team5.Epic_Energy_Services.repositories.CustomerRepository;
+import team5.Epic_Energy_Services.repositories.ClientsRepository;
 import team5.Epic_Energy_Services.repositories.InvoiceRepository;
 import team5.Epic_Energy_Services.repositories.InvoiceStatusRepository;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 public class InvoiceService {
@@ -22,22 +25,23 @@ public class InvoiceService {
     private InvoiceRepository invoiceRepo;
 
     @Autowired
-    private CustomerRepository customerRepo;
+    private ClientsRepository clientsRepo;
 
     @Autowired
     private InvoiceStatusRepository statusRepo;
 
     public Invoice save(InvoiceRequestDTO body) {
-        Customer customer = customerRepo.findById(body.customerId())
-                .orElseThrow(() -> new NotFoundException("Cliente non trovato"));
+        B2bClient client = clientsRepo.findById(body.customerId())
+                .orElseThrow(() -> new NotFoundException("Cliente con ID " + body.customerId() + " non trovato"));
 
         InvoiceStatus status = statusRepo.findById(body.statusId())
-                .orElseThrow(() -> new NotFoundException("Stato non trovato"));
+                .orElseThrow(() -> new NotFoundException("Stato fattura con ID " + body.statusId() + " non trovato"));
+
         Invoice newInvoice = new Invoice();
         newInvoice.setDate(body.date());
         newInvoice.setAmount(body.amount());
         newInvoice.setNumber(body.number());
-        newInvoice.setCustomer(customer);
+        newInvoice.setClient(client);
         newInvoice.setStatus(status);
 
         return invoiceRepo.save(newInvoice);
@@ -58,7 +62,6 @@ public class InvoiceService {
         invoiceRepo.delete(found);
     }
 
-
     public Page<Invoice> filterByYear(int year, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return invoiceRepo.findByYear(year, pageable);
@@ -69,11 +72,11 @@ public class InvoiceService {
         return invoiceRepo.findByAmountBetween(min, max, pageable);
     }
 
-    public Page<Invoice> filterByCustomer(Long customerId, int page, int size) {
-        Customer customer = customerRepo.findById(customerId)
+    public Page<Invoice> filterByClient(UUID clientId, int page, int size) {
+        B2bClient client = clientsRepo.findById(clientId)
                 .orElseThrow(() -> new NotFoundException("Cliente non trovato"));
         Pageable pageable = PageRequest.of(page, size);
-        return invoiceRepo.findByCustomer(customer, pageable);
+        return invoiceRepo.findByClient(client, pageable);
     }
 
     public Page<Invoice> filterByStatus(Long statusId, int page, int size) {
@@ -81,5 +84,10 @@ public class InvoiceService {
                 .orElseThrow(() -> new NotFoundException("Stato non trovato"));
         Pageable pageable = PageRequest.of(page, size);
         return invoiceRepo.findByStatus(status, pageable);
+    }
+
+    public Page<Invoice> filterByDate(LocalDate date, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepo.findByDate(date, pageable);
     }
 }

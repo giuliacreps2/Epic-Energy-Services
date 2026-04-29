@@ -9,6 +9,9 @@ import team5.Epic_Energy_Services.entities.Invoice;
 import team5.Epic_Energy_Services.payloads.InvoiceRequestDTO;
 import team5.Epic_Energy_Services.services.InvoiceService;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/invoices")
 public class InvoiceController {
@@ -47,7 +50,6 @@ public class InvoiceController {
             @RequestParam double min,
             @RequestParam double max,
             @RequestParam(defaultValue = "0") int page) {
-        // PASSAGGIO CORRETTO: solo i valori, senza "size:"
         return invoiceService.filterByAmount(min, max, page, 10);
     }
 
@@ -55,8 +57,27 @@ public class InvoiceController {
     public Page<Invoice> filterByYear(
             @RequestParam int year,
             @RequestParam(defaultValue = "0") int page) {
-        // PASSAGGIO CORRETTO: solo i valori, senza "size:"
         return invoiceService.filterByYear(year, page, 10);
     }
 
+    @GetMapping("/filter/client/{clientId}")
+    public Page<Invoice> filterByClient(
+            @PathVariable UUID clientId,
+            @RequestParam(defaultValue = "0") int page) {
+        return invoiceService.filterByClient(clientId, page, 10);
+    }
+
+    @GetMapping("/filter/status/{statusId}")
+    public Page<Invoice> filterByStatus(
+            @PathVariable Long statusId,
+            @RequestParam(defaultValue = "0") int page) {
+        return invoiceService.filterByStatus(statusId, page, 10);
+    }
+
+    @GetMapping("/filter/date")
+    public Page<Invoice> filterByDate(
+            @RequestParam LocalDate date,
+            @RequestParam(defaultValue = "0") int page) {
+        return invoiceService.filterByDate(date, page, 10);
+    }
 }

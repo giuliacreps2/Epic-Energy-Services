@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import team5.Epic_Energy_Services.entities.Customer;
+import team5.Epic_Energy_Services.entities.B2bClient;
 import team5.Epic_Energy_Services.entities.Invoice;
 import team5.Epic_Energy_Services.entities.InvoiceStatus;
 
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-    Page<Invoice> findByCustomer(Customer customer, Pageable pageable);
+    Page<Invoice> findByClient(B2bClient client, Pageable pageable);
 
     Page<Invoice> findByStatus(InvoiceStatus status, Pageable pageable);
 

@@ -42,8 +42,7 @@ public class UsersService {
     }
 
     public User save(UsersDTO usersDTO) {
-        if(this.usersRepository.existsByEmail(usersDTO.email())) throw new BadRequestException("email already used");
-        if(this.usersRepository.existsByUsername(usersDTO.username())) throw new BadRequestException("username already used");
+        if (this.usersRepository.existsByEmail(usersDTO.email())) throw new BadRequestException("email already used");
         User user = new User(usersDTO.username(), usersDTO.email()
                 , this.encoder.encode(usersDTO.password()), usersDTO.name(), usersDTO.surname(), usersDTO.avatar());
         Role role = this.roleService.findByName(usersDTO.role().trim());
@@ -52,12 +51,14 @@ public class UsersService {
         this.userRoleService.save(userRole);
         return userCreated;
     }
+
     @Transactional
-    public void deleteById(UUID id){
+    public void deleteById(UUID id) {
         this.userRoleService.deleteByUserId(id);
         this.usersRepository.deleteById(id);
     }
-    public User modifyById(User user, UsersDTO usersDTO){
+
+    public User modifyById(User user, UsersDTO usersDTO) {
         user.setAvatar(usersDTO.avatar());
         user.setEmail(usersDTO.email());
         user.setName(usersDTO.name());
@@ -68,7 +69,7 @@ public class UsersService {
         UserRole userRole = this.userRoleService.findByUserId(user.getId());
         userRole.setRole(newRole);
         this.userRoleService.save(userRole);
-        return  this.usersRepository.save(user);
+        return this.usersRepository.save(user);
 
     }
 }
