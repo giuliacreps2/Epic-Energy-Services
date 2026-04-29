@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,12 +78,15 @@ public class ClientsController {
 
     //5.PATCH COMPAGNY LOGO
     @PatchMapping("/{b2bClientId}/company-logo")
-    public void updateCompanyLogo(@RequestParam("company_Logo") MultipartFile file, @PathVariable UUID b2bClientId) {
+    public ResponseEntity<String> updateCompanyLogo(@RequestParam("company_Logo") MultipartFile file, @PathVariable UUID b2bClientId) {
         log.info(file.getOriginalFilename());
         log.info(file.getContentType());
         log.info(String.valueOf(file.getSize()));
 
         this.clientsService.logoUpload(file, b2bClientId);
+        log.info("Modifica completata");
+
+        return ResponseEntity.ok("Logo successfully uploaded");
     }
 
 }

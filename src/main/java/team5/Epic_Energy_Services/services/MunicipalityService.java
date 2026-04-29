@@ -26,4 +26,7 @@ public class MunicipalityService {
     }
 
 
+    public Municipality findByName(String name) {
+        return this.municipalityRepository.findByNameContainingIgnoreCase(name);
+    }
 }

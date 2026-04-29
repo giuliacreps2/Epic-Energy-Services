@@ -46,13 +46,35 @@ public class ClientsService {
 
     //1.SAVE CLIENT + SEND MAIL
     public B2bClient saveClient(ClientsDTO body) {
-        Municipality municipality = this.municipalityRepository.findById(body.id())
-                .orElseThrow(() -> new NotFoundIdException("Municipality", body.id()));
+        //Indirizzo legale
+        Municipality municipality = this.municipalityRepository.findById(body.legalMunicipalityId())
+                .orElseThrow(() -> new NotFoundIdException("Municipality", body.legalMunicipalityId()));
 
-        Address address = new Address(body.street(), body.number(), body.locality(), body.zipCode(), municipality);
+        Address legalAddress = new Address(body.legalStreet(),
+                body.legalNumber(),
+                body.legalLocality(),
+                body.operationalZipCode(),
+                municipality
+        );
+        addressRepository.save(legalAddress);
 
-        addressRepository.save(address);
 
+        //Indirizzo facoltativo
+        Address operationalAddress = null;
+        if (body.operationalMunicipalityId() != null) {
+            Municipality operationalMunicipality = this.municipalityRepository.findById(body.legalMunicipalityId())
+                    .orElseThrow(() -> new NotFoundIdException("Municipality", body.legalMunicipalityId()));
+
+            operationalAddress = new Address(body.operationalStreet(),
+                    body.operationalNumber(),
+                    body.operationalLocality(),
+                    body.operationalZipCode(),
+                    operationalMunicipality
+            );
+            addressRepository.save(operationalAddress);
+        }
+
+        //Cliente
         B2bClient newClient = new B2bClient(body.companyName(),
                 body.vatNumber(),
                 body.createdAt() != null ? body.createdAt() : LocalDate.now(),
@@ -64,9 +86,12 @@ public class ClientsService {
                 body.contactName(),
                 body.contactSurname(),
                 body.contactPhone(),
-                body.typeClient());
-
-        newClient.setLegalAddress(address);
+                body.typeClient()
+        );
+        newClient.setLegalAddress(legalAddress);
+        if (operationalAddress != null) {
+            newClient.setOperationalAddress(operationalAddress);
+        }
 
         B2bClient savedClient = this.clientsRepository.save(newClient);
         this.emailSender.sendRegistrationEmail(savedClient);

@@ -49,21 +49,31 @@ public record ClientsDTO(
         TypeB2bClient typeClient,
 
 
-        /// ///////////
-        @NotBlank(message = "")
-        String street,
+        //--------------SEDE LEGALE----------------//
 
-        @NotNull
-        Integer number,
+        @NotBlank(message = "La via della sede legale è obbligatoria")
+        String legalStreet,
 
-        @NotBlank
-        String locality,
+        @NotNull(message = "Il civico della sede legale è obbligatorio")
+        Integer legalNumber,
 
-        @NotNull
-        Integer zipCode,
+        @NotBlank(message = "La località della sede legale è obbligatorio")
+        String legalLocality,
 
-        @NotNull
-        Long id
+        @NotNull(message = "Il CAP della sede legale è obbligatorio")
+        Integer legalZipCode,
+
+        @NotNull(message = "Il comune della sede legale è obbligatorio")
+        Long legalMunicipalityId,
+
+
+        //--------------SEDE OPERATIVA (nullable)----------------//
+        String operationalStreet,
+        Integer operationalNumber,
+        String operationalLocality,
+        Integer operationalZipCode,
+        Long operationalMunicipalityId
+
 ) {
 
 }

@@ -15,7 +15,6 @@ public class B2bClientsSpecs {
                 clientId == null ? null : builder.equal(root.get("clientId"), clientId);
     }
 
-    ;
 
     //Nome contatto
     public static Specification<B2bClient> hasContactName(String contactName) {
@@ -103,7 +102,7 @@ public class B2bClientsSpecs {
             return builder.equal(root.get("createdAt"), createdAt);
         };
     }
-    
+
     //LastContactDate
     public static Specification<B2bClient> lastContactDate(LocalDate lastContactDate) {
         return (root, query, builder) -> {

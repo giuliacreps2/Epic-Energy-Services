@@ -18,7 +18,7 @@ public class Municipality {
     private String name;
 
     @JoinColumn
-    @OneToOne
+    @ManyToOne
     private Province province;
 
     public Municipality(String name, Province province) {
