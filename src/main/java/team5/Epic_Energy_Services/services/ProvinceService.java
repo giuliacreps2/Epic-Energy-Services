@@ -28,4 +28,5 @@ public class ProvinceService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return this.provinceRepository.findAll(pageable);
     }
+
 }

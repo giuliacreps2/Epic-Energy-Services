@@ -15,12 +15,11 @@ import team5.Epic_Energy_Services.services.ProvinceService;
 public class ImportController {
 
     private final ImportService importService;
-    private final ProvinceService provinceService;
+
 
 
     public ImportController(ImportService importService, ProvinceService provinceService) {
         this.importService = importService;
-        this.provinceService = provinceService;
     }
 
     @PostMapping("/provinces")
@@ -28,6 +27,14 @@ public class ImportController {
             @RequestParam("file") MultipartFile file) {
 
         importService.importProvince(file);
+        return ResponseEntity.ok("Import completato");
+    }
+
+    @PostMapping("/municipality")
+    public ResponseEntity<String> uploadMunicipality(
+            @RequestParam("file") MultipartFile file) {
+
+        importService.importMunicipality(file);
         return ResponseEntity.ok("Import completato");
     }
 
