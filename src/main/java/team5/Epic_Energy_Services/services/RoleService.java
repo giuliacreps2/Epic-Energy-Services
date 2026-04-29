@@ -44,7 +44,8 @@ public class RoleService {
     public Role findByName(String name) {
         return this.rolesRepository.findByRoleName(name).orElseThrow(() -> new NotFoundException("role not found"));
     }
-    public boolean existByName(String name){
-        return  this.rolesRepository.existsByRoleName(name);
+
+    public boolean existByName(String name) {
+        return this.rolesRepository.existsByRoleName(name);
     }
 }
