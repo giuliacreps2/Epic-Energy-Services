@@ -65,7 +65,7 @@ public class B2bClientsSpecs {
     //Fatturato annuale
     public static Specification<B2bClient> hasAnnualRevenue(Double annualRevenue) {
         return (root, query, builder) -> {
-            if (annualRevenue <= 0) {
+            if (annualRevenue == null || annualRevenue <= 0) {
                 return builder.conjunction();
             }
             return builder.greaterThanOrEqualTo(root.get("annualRevenue"), annualRevenue);
@@ -103,17 +103,7 @@ public class B2bClientsSpecs {
             return builder.equal(root.get("createdAt"), createdAt);
         };
     }
-
-    //CreatedAt
-    public static Specification<B2bClient> createdAtBetween(LocalDate createdAt) {
-        return (root, query, builder) -> {
-            if (createdAt == null) {
-                return null;
-            }
-            return builder.between(root.get("createdAt"), createdAt, createdAt);
-        };
-    }
-
+    
     //LastContactDate
     public static Specification<B2bClient> lastContactDate(LocalDate lastContactDate) {
         return (root, query, builder) -> {
@@ -121,16 +111,6 @@ public class B2bClientsSpecs {
                 return null;
             }
             return builder.equal(root.get("lastContactDate"), lastContactDate);
-        };
-    }
-
-    //CreatedAt
-    public static Specification<B2bClient> lastContactDateBetween(LocalDate lastContactDate) {
-        return (root, query, builder) -> {
-            if (lastContactDate == null) {
-                return null;
-            }
-            return builder.between(root.get("lastContactDate"), lastContactDate, lastContactDate);
         };
     }
 

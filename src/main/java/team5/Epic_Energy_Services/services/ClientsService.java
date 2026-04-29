@@ -5,6 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import team5.Epic_Energy_Services.entities.Address;
@@ -17,6 +18,7 @@ import team5.Epic_Energy_Services.repositories.AddressRepository;
 import team5.Epic_Energy_Services.repositories.ClientsRepository;
 import team5.Epic_Energy_Services.repositories.MunicipalityRepository;
 import team5.Epic_Energy_Services.tools.EmailSender;
+import team5.Epic_Energy_Services.utilities.B2bClientsSpecs;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -101,31 +103,47 @@ public class ClientsService {
 
 
     //5. FILTRO DETAILS
-    public Page<B2bClient> search(Double annualRevenue, LocalDate createdAt, LocalDate lastContactDate, String companyName, String name, Pageable pageable) {
-        if (annualRevenue != null && annualRevenue != 0)
-            return this.clientsRepository.findByAnnualRevenueGreaterThanEqual(annualRevenue, pageable);
+//    public Page<B2bClient> search(Double annualRevenue, LocalDate createdAt, LocalDate lastContactDate, String companyName, String name, Pageable pageable) {
+//        if (annualRevenue != null && annualRevenue != 0)
+//            return this.clientsRepository.findByAnnualRevenueGreaterThanEqual(annualRevenue, pageable);
+//
+//        if (createdAt != null)
+//            return this.clientsRepository.findAllByCreatedAt(createdAt, pageable);
+//
+//        if (lastContactDate != null)
+//            return this.clientsRepository.findAllByLastContactDate(lastContactDate, pageable);
+//
+//        if (companyName != null)
+//            return this.clientsRepository.findByCompanyNameContainingIgnoreCase(companyName, pageable);
+//
 
-        if (createdAt != null)
-            return this.clientsRepository.findAllByCreatedAt(createdAt, pageable);
-
-        if (lastContactDate != null)
-            return this.clientsRepository.findAllByLastContactDate(lastContactDate, pageable);
-
-        if (companyName != null)
-            return this.clientsRepository.findByCompanyNameContainingIgnoreCase(companyName, pageable);
-
-//        if (contactName != null) {
-//            return this.clientsRepository.findByContactNameContainingIgnoreCase(contactName, pageable);
-//        }
-        if (name != null && !name.isEmpty())
-            return this.clientsRepository.findByLegalAddressMunicipalityProvinceNameIgnoreCase(name, pageable);
-
-
-        return this.clientsRepository.findAll(pageable);
-    }
+    /// /        if (contactName != null) {
+    /// /            return this.clientsRepository.findByContactNameContainingIgnoreCase(contactName, pageable);
+    /// /        }
+//        if (name != null && !name.isEmpty())
+//            return this.clientsRepository.findByLegalAddressMunicipalityProvinceNameIgnoreCase(name, pageable);
+//
+//
+//        return this.clientsRepository.findAll(pageable);
+//    }
 
 
     //Spring specification queries concatenate, componibili
+    public Page<B2bClient> search(Double annualRevenue, LocalDate createdAt, LocalDate lastContactDate, String contactName, String contactSurname, Long vatNumber, Long contactPhone, String name, String companyName, Pageable pageable) {
+        Specification<B2bClient> spec = (root, query, builder) -> builder.conjunction();
+
+        spec = spec.and(B2bClientsSpecs.hasAnnualRevenue(annualRevenue));
+        spec = spec.and(B2bClientsSpecs.createdAt(createdAt));
+        spec = spec.and(B2bClientsSpecs.lastContactDate(lastContactDate));
+        spec = spec.and(B2bClientsSpecs.hasContactName(contactName));
+        spec = spec.and(B2bClientsSpecs.hasContactSurname(contactSurname));
+        spec = spec.and(B2bClientsSpecs.hasCompanyName(companyName));
+        spec = spec.and(B2bClientsSpecs.vatNumberStartsWith(vatNumber));
+        spec = spec.and(B2bClientsSpecs.contactPhoneStartsWith(contactPhone));
+        spec = spec.and(B2bClientsSpecs.livesInProvinces(name));
+
+        return this.clientsRepository.findAll(spec, pageable);
+    }
 
 
     //6. DELETE

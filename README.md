@@ -34,4 +34,5 @@ POST http://localhost:${PORT}/clients
 
 
 
-
+//-------------------------------------------------//
+GET http://localhost:3001/clients/details?contactName=Giampaolo&annualRevenue=500600

@@ -53,6 +53,10 @@ public class ClientsController {
     public Page<B2bClient> searchDetails(@RequestParam(required = false) Double annualRevenue,
                                          @RequestParam(required = false) LocalDate createdAt,
                                          @RequestParam(required = false) LocalDate lastContact,
+                                         @RequestParam(required = false) String contactName,
+                                         @RequestParam(required = false) String contactSurname,
+                                         @RequestParam(required = false) Long vatNumber,
+                                         @RequestParam(required = false) Long contactPhone,
                                          @RequestParam(required = false) String name,
                                          @RequestParam(required = false) String companyName,
                                          @RequestParam(defaultValue = "0") int page,
@@ -61,7 +65,7 @@ public class ClientsController {
                                          @RequestParam(defaultValue = "ASC") String direction) {
         Sort sort = direction.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return this.clientsService.search(annualRevenue, createdAt, lastContact, name, companyName, pageable);
+        return this.clientsService.search(annualRevenue, createdAt, lastContact, contactName, contactSurname, vatNumber, contactPhone, name, companyName, pageable);
     }
 
     //4. GET CLIENTBYID
