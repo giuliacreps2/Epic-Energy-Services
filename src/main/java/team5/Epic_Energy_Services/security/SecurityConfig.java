@@ -52,7 +52,7 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/auth/**", configuration);
         return source;
     }
 
