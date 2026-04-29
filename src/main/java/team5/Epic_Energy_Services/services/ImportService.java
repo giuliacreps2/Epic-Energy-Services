@@ -1,5 +1,6 @@
 package team5.Epic_Energy_Services.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,19 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 
-
+@Slf4j
 @Service
 public class ImportService {
-
-    private final AddressRepository addressRepository;
-    private final MunicipalityRepository municipalityRepository;
-    private  final ProvinceRepository provinceRepository;
-
-    public ImportService(AddressRepository addressRepository, MunicipalityRepository municipalityRepository, ProvinceRepository provinceRepository) {
-        this.addressRepository = addressRepository;
-        this.municipalityRepository = municipalityRepository;
-        this.provinceRepository = provinceRepository;
-    }
 
     private static final Map<String, String> PROVINCE_MAP = Map.ofEntries(
             Map.entry("Valle d'Aosta/Vallée d'Aoste", "Aosta"),
@@ -42,6 +33,15 @@ public class ImportService {
             Map.entry("La Spezia", "La-Spezia"),
             Map.entry("Massa-Carrara", "Massa-Carrara")
     );
+    private final AddressRepository addressRepository;
+    private final MunicipalityRepository municipalityRepository;
+    private final ProvinceRepository provinceRepository;
+
+    public ImportService(AddressRepository addressRepository, MunicipalityRepository municipalityRepository, ProvinceRepository provinceRepository) {
+        this.addressRepository = addressRepository;
+        this.municipalityRepository = municipalityRepository;
+        this.provinceRepository = provinceRepository;
+    }
 
     @Transactional
     public void importProvince(MultipartFile file) {
@@ -65,8 +65,7 @@ public class ImportService {
                     provinceRepository.save(p);
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new BadRequestException("Errore lettura file");
         }
     }
@@ -92,11 +91,18 @@ public class ImportService {
 
                 Province p = provinceRepository.findByName(nomeProvinciaCorretto).orElse(null);
 
+                if (p != null && municipalityRepository.findByNameIgnoreCase(nomeComune).isEmpty()) {
+                    Municipality m = new Municipality();
+                    m.setName(nomeComune);
+                    m.setProvince(p);
+                    municipalityRepository.save(m);
+                }
 
             }
         } catch (IOException e) {
             throw new BadRequestException("Errore lettura file comuni");
         }
     }
+
 
 }

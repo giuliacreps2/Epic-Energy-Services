@@ -1,7 +1,6 @@
 package team5.Epic_Energy_Services.entities;
 
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +22,7 @@ public class Address {
     private Integer zipCode;
 
     @JoinColumn
-    @OneToOne
+    @ManyToOne
     private Municipality municipality;
 
 

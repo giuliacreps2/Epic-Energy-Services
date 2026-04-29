@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import team5.Epic_Energy_Services.entities.Municipality;
 import team5.Epic_Energy_Services.services.MunicipalityService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/municipality")
 public class MunicipalityController {
@@ -26,7 +28,7 @@ public class MunicipalityController {
     }
 
     @GetMapping("/search")
-    public Municipality searchByName(@RequestParam String name) {
+    public List<Municipality> searchByName(@RequestParam String name) {
         return this.municipalityService.findByName(name);
     }
 

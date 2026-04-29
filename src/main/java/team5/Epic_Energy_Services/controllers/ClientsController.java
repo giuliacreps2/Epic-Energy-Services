@@ -89,4 +89,10 @@ public class ClientsController {
         return ResponseEntity.ok("Logo successfully uploaded");
     }
 
+    @DeleteMapping("/{b2bClientId}/cancel")
+    public void deleteClientById(@PathVariable UUID b2bClientId) {
+        this.clientsService.findByIdAndDelete(b2bClientId);
+        log.info("Cliente eliminato con successo");
+    }
+
 }
