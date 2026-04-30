@@ -13,6 +13,7 @@ import team5.Epic_Energy_Services.repositories.ProvinceRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -70,7 +71,7 @@ public class ImportService {
         }
     }
 
-    @Transactional
+   /* @Transactional
     public void importMunicipality(MultipartFile file) {
         if (file.isEmpty()) throw new BadRequestException("File comuni vuoto");
 
@@ -99,6 +100,58 @@ public class ImportService {
                 }
 
             }
+        } catch (IOException e) {
+            throw new BadRequestException("Errore lettura file comuni");
+        }
+    }*/
+
+    @Transactional
+    public void importMunicipality(MultipartFile file) {
+        if (file.isEmpty()) throw new BadRequestException("File comuni vuoto");
+
+        try (Scanner scanner = new Scanner(file.getInputStream(), StandardCharsets.UTF_8)) {
+            if (scanner.hasNextLine()) {
+                String header = scanner.nextLine();
+                log.info("Header CSV: " + header);
+            }
+
+            int salvati = 0;
+            int saltati = 0;
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.isEmpty()) continue;
+
+                String[] columns = line.split(";");
+                log.info("Colonne trovate: " + columns.length + " → " + Arrays.toString(columns));
+                if (columns.length < 4) {
+                    saltati++;
+                    continue;
+                }
+
+                String nomeComune = columns[2].trim();
+                String nomeProvinciaCSV = columns[3].trim();
+                String nomeProvinciaCorretto = PROVINCE_MAP.getOrDefault(nomeProvinciaCSV, nomeProvinciaCSV);
+
+                Province p = provinceRepository.findByName(nomeProvinciaCorretto).orElse(null);
+
+                if (p == null) {
+                    log.warn("Provincia non trovata: " + nomeProvinciaCSV + " → " + nomeProvinciaCorretto);
+                    saltati++;
+                    continue;
+                }
+
+                if (municipalityRepository.findByNameIgnoreCase(nomeComune).isEmpty()) {
+                    Municipality m = new Municipality();
+                    m.setName(nomeComune);
+                    m.setProvince(p);
+                    municipalityRepository.save(m);
+                    salvati++;
+                }
+            }
+
+            log.info("Import completato → salvati: " + salvati + ", saltati: " + saltati);
+
         } catch (IOException e) {
             throw new BadRequestException("Errore lettura file comuni");
         }
