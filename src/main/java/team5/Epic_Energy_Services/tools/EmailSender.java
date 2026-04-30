@@ -23,7 +23,7 @@ public class EmailSender {
     public void sendRegistrationEmail(B2bClient recipient) {
         HttpResponse<JsonNode> response = Unirest.post("https://api.mailgun.net/v3/" + this.domainName + "/messages")
                 .basicAuth("api", this.apiKey)
-                .queryString("from", "giulia.creps2@gmail.com")
+                .queryString("from", "dattolafrancescoo@gmail.com")
                 .queryString("to", recipient.getContactEmail())
                 .queryString("subject", "Welcome!")
                 .queryString("text", "Congratulations" + recipient.getContactName() + " Your subscription is gone successfully!")

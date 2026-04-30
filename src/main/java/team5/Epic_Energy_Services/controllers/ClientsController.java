@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,18 +37,18 @@ public class ClientsController {
 
     //1.POST CLIENTE
     @PostMapping
-//    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('admin')")
     public B2bClient save(@RequestBody @Validated ClientsDTO body) {
         return this.clientsService.saveClient(body);
     }
 
     //2. GET CLIENTSBYNAME
-    @GetMapping("/all")
+   /* @GetMapping("/all")
     public Page<B2bClient> getAllClients(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size,
                                          @RequestParam(defaultValue = "contactName") String sortBy) {
         return this.clientsService.findAllClients(PageRequest.of(page, size, Sort.by(sortBy)));
-    }
+    }*/
 
     //3. GET DETAILSCLIENTS
     @GetMapping("/details")
