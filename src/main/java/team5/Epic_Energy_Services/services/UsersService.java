@@ -34,6 +34,8 @@ public class UsersService {
                 .orElseThrow(() -> new NotFoundException("email user " + email + " not found"));
     }
 
+
+
     @Transactional
     public User findById(UUID userId) {
         return this.usersRepository.findById(userId).orElseThrow(() -> new NotFoundException("id not found"));

@@ -49,13 +49,14 @@ public class B2bClient {
     @Enumerated(EnumType.STRING)
     private TypeB2bClient typeClient;
 
-//    @OneToOne
-//    @JoinColumn(name = "legal_address_id")
-//    private String legalAddress;
-//
-//    @OneToOne
-//    @JoinColumn(name = "operational_address_id")
-//    private String operationalAddress;
+
+    @OneToOne
+    @JoinColumn(name = "legal_address_id")
+    private Address legalAddress;
+
+    @OneToOne
+    @JoinColumn(name = "operational_address_id")
+    private Address operationalAddress;
 
 
     public B2bClient(String companyName, Long vatNumber, LocalDate createdAt, LocalDate lastContactDate, double annualRevenue, String certifiedEmail, Long phoneClient, String contactEmail, String contactName, String contactSurname, Long contactPhone, TypeB2bClient typeClient) {

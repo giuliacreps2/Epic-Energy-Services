@@ -46,6 +46,34 @@ public record ClientsDTO(
         Long contactPhone,
 
         String companyLogo,
-        TypeB2bClient typeClient
+        TypeB2bClient typeClient,
+
+
+        //--------------SEDE LEGALE----------------//
+
+        @NotBlank(message = "La via della sede legale è obbligatoria")
+        String legalStreet,
+
+        @NotNull(message = "Il civico della sede legale è obbligatorio")
+        Integer legalNumber,
+
+        @NotBlank(message = "La località della sede legale è obbligatorio")
+        String legalLocality,
+
+        @NotNull(message = "Il CAP della sede legale è obbligatorio")
+        Integer legalZipCode,
+
+        @NotNull(message = "Il comune della sede legale è obbligatorio")
+        Long legalMunicipalityId,
+
+
+        //--------------SEDE OPERATIVA (nullable)----------------//
+        String operationalStreet,
+        Integer operationalNumber,
+        String operationalLocality,
+        Integer operationalZipCode,
+        Long operationalMunicipalityId
+
 ) {
+
 }
