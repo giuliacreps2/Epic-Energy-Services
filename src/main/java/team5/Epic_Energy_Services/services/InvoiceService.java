@@ -90,4 +90,9 @@ public class InvoiceService {
         Pageable pageable = PageRequest.of(page, size);
         return invoiceRepo.findByDate(date, pageable);
     }
+
+    public InvoiceStatus createInvoiceStatus(String name) {
+        InvoiceStatus newStatus = new InvoiceStatus(name);
+        return statusRepo.save(newStatus);
+    }
 }

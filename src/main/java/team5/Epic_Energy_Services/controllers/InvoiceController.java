@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team5.Epic_Energy_Services.entities.Invoice;
+import team5.Epic_Energy_Services.entities.InvoiceStatus;
 import team5.Epic_Energy_Services.payloads.InvoiceRequestDTO;
 import team5.Epic_Energy_Services.services.InvoiceService;
 
@@ -79,5 +80,11 @@ public class InvoiceController {
             @RequestParam LocalDate date,
             @RequestParam(defaultValue = "0") int page) {
         return invoiceService.filterByDate(date, page, 10);
+    }
+
+    @PostMapping("/statuses")
+    @ResponseStatus(HttpStatus.CREATED)
+    public InvoiceStatus createStatus(@RequestBody String statusName) {
+        return invoiceService.createInvoiceStatus(statusName);
     }
 }
