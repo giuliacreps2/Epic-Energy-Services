@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import team5.Epic_Energy_Services.entities.Municipality;
 import team5.Epic_Energy_Services.repositories.MunicipalityRepository;
 
+import java.util.List;
+
 @Service
 public class MunicipalityService {
 
@@ -26,4 +28,7 @@ public class MunicipalityService {
     }
 
 
+    public List<Municipality> findByName(String name) {
+        return this.municipalityRepository.findByNameContainingIgnoreCase(name);
+    }
 }

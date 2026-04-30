@@ -6,24 +6,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "municipalities")
-@NoArgsConstructor
+@Table(name = "invoice_statuses")
 @Getter
 @Setter
-public class Municipality {
-
+@NoArgsConstructor
+public class InvoiceStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @JoinColumn
-    @ManyToOne
-    private Province province;
-
-    public Municipality(String name, Province province) {
+    public InvoiceStatus(String name) {
         this.name = name;
-        this.province = province;
     }
 }
-
